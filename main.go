@@ -69,6 +69,7 @@ func main() {
 	if err = controller.Run(2, stopCh); err != nil {
 		glog.Fatalf("Error running controller: %s", err.Error())
 	}
+	glog.Flush()
 }
 
 func init() {
