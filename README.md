@@ -31,7 +31,7 @@ This is an example of how to build a kube-like controller with a single type.
 
 ```sh
 # assumes you have a working kubeconfig, not required if operating in-cluster
-$ go run *.go -kubeconfig=$HOME/.kube/config
+$ go run *.go -kubeconfig=$HOME/.kube/config -logtostderr=true -stderrthreshold=INFO
 
 # create a CustomResourceDefinition
 $ kubectl create -f artifacts/examples/crd.yaml
@@ -39,8 +39,6 @@ $ kubectl create -f artifacts/examples/crd.yaml
 # create a custom resource of type Foo
 $ kubectl create -f artifacts/examples/example-foo.yaml
 
-# check deployments created through the custom resource
-$ kubectl get deployments
 ```
 
 ## Use Cases
