@@ -288,6 +288,7 @@
     "pkg/util/net",
     "pkg/util/runtime",
     "pkg/util/sets",
+    "pkg/util/sets/types",
     "pkg/util/strategicpatch",
     "pkg/util/validation",
     "pkg/util/validation/field",
@@ -432,28 +433,9 @@
   ]
   revision = "39a7bf85c140f972372c2a0d1ee40adbf0c8bfe1"
 
-[[projects]]
-  branch = "master"
-  name = "k8s.io/sample-controller"
-  packages = [
-    "pkg/apis/samplecontroller",
-    "pkg/apis/samplecontroller/v1alpha1",
-    "pkg/client/clientset/versioned",
-    "pkg/client/clientset/versioned/scheme",
-    "pkg/client/clientset/versioned/typed/samplecontroller/v1alpha1",
-    "pkg/client/clientset/versioned/typed/samplecontroller/v1alpha1/fake",
-    "pkg/client/informers/externalversions",
-    "pkg/client/informers/externalversions/internalinterfaces",
-    "pkg/client/informers/externalversions/samplecontroller",
-    "pkg/client/informers/externalversions/samplecontroller/v1alpha1",
-    "pkg/client/listers/samplecontroller/v1alpha1",
-    "pkg/signals"
-  ]
-  revision = "9ba34a0e65141d215d999e7358661c10d2ca91f1"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ffa638cd196555c54ec29b5ddfd905cb0505201e17f9a7a0f72cd7b7d7394238"
+  inputs-digest = "41cd8e0bc29ec85da6b14847456c0241491cdd98a88e9a1a25e11f453b9cbcaf"
   solver-name = "gps-cdcl"
   solver-version = 1
