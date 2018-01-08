@@ -25,6 +25,7 @@ trap popd EXIT
 
 # Ensure we have everything we need under vendor/
 dep ensure
+dep prune
 
 # Make sure that BUILD files are up to date (the above removes them).
 bazel run //:gazelle -- -proto=disable
@@ -33,3 +34,7 @@ bazel run //:gazelle -- -proto=disable
 # since it's hard to vendor.
 sed -i 's|//vendor/k8s.io/code-generator/|@io_k8s_code_generator//|g' \
     $(find ${SCRIPT_ROOT}/vendor -name '*' | xargs grep k8s.io/code-generator |& grep code-gen | cut -d':' -f 1 | uniq)
+
+# Fix up a case in k8s' client-go where non-testdata relies on files
+# in testdata (and so breaks after pruning).
+sed -i 's|.*".*dontUseThisKey.pem",||g' vendor/k8s.io/client-go/util/cert/BUILD

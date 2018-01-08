@@ -30,7 +30,6 @@ go_test(
         "match_test.go",
         "parse_test.go",
     ],
-    data = glob(["testdata/**"]),
     embed = [":go_default_library"],
     importpath = "golang.org/x/text/language",
     deps = [
@@ -46,7 +45,6 @@ go_test(
         "examples_test.go",
         "httpexample_test.go",
     ],
-    data = glob(["testdata/**"]),
     importpath = "golang.org/x/text/language_test",
     deps = [":go_default_library"],
 )
