@@ -33,9 +33,6 @@ import (
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 
-	// Trick dep (DO THIS BETTER)
-	_ "k8s.io/apimachinery/pkg/util/sets/types"
-
 	clientset "k8s.io/sample-controller/pkg/client/clientset/versioned"
 	samplescheme "k8s.io/sample-controller/pkg/client/clientset/versioned/scheme"
 	informers "k8s.io/sample-controller/pkg/client/informers/externalversions"
