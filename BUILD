@@ -68,6 +68,7 @@ k8s_objects(
     name = "everything",
     objects = [
         "//artifacts/examples:crd",
+        "//artifacts/examples:authz",
         ":controller",
     ],
 )
