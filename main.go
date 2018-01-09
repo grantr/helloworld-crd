@@ -27,6 +27,8 @@ import (
 	// Uncomment the following line to load the gcp plugin (only required to authenticate against GKE clusters).
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 
+	"k8s.io/sample-controller/pkg/controller"
+
 	clientset "k8s.io/sample-controller/pkg/client/clientset/versioned"
 	informers "k8s.io/sample-controller/pkg/client/informers/externalversions"
 	"k8s.io/sample-controller/pkg/signals"
@@ -61,13 +63,13 @@ func main() {
 	kubeInformerFactory := kubeinformers.NewSharedInformerFactory(kubeClient, time.Second*30)
 	exampleInformerFactory := informers.NewSharedInformerFactory(exampleClient, time.Second*30)
 
-	controller := NewController(kubeClient, exampleClient, kubeInformerFactory, exampleInformerFactory)
+	c := controller.New(kubeClient, exampleClient, kubeInformerFactory, exampleInformerFactory)
 
 	go kubeInformerFactory.Start(stopCh)
 	go exampleInformerFactory.Start(stopCh)
 
-	if err = controller.Run(2, stopCh); err != nil {
-		glog.Fatalf("Error running controller: %s", err.Error())
+	if err = c.Run(2, stopCh); err != nil {
+		glog.Fatalf("Error running controllers: %s", err.Error())
 	}
 	glog.Flush()
 }

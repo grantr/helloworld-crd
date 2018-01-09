@@ -4,8 +4,8 @@ go_library(
     name = "go_default_library",
     srcs = [
         "doc.go",
+        "foo_types.go",
         "register.go",
-        "types.go",
         "zz_generated.deepcopy.go",
     ],
     importpath = "k8s.io/sample-controller/pkg/apis/samplecontroller/v1alpha1",

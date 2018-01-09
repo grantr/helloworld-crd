@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package foo
 
 import (
 	"fmt"
@@ -32,6 +32,8 @@ import (
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
+
+	"k8s.io/sample-controller/pkg/controller"
 
 	clientset "k8s.io/sample-controller/pkg/client/clientset/versioned"
 	samplescheme "k8s.io/sample-controller/pkg/client/clientset/versioned/scheme"
@@ -79,7 +81,7 @@ func NewController(
 	kubeclientset kubernetes.Interface,
 	sampleclientset clientset.Interface,
 	kubeInformerFactory kubeinformers.SharedInformerFactory,
-	sampleInformerFactory informers.SharedInformerFactory) *Controller {
+	sampleInformerFactory informers.SharedInformerFactory) controller.Interface {
 
 	// obtain a reference to a shared index informer for the Foo type.
 	fooInformer := sampleInformerFactory.Samplecontroller().V1alpha1().Foos()
