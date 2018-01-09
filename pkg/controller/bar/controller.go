@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package foo
+package bar
 
 import (
 	"fmt"
@@ -41,29 +41,29 @@ import (
 	listers "k8s.io/sample-controller/pkg/client/listers/samplecontroller/v1alpha1"
 )
 
-const controllerAgentName = "foo-controller"
+const controllerAgentName = "bar-controller"
 
 const (
-	// SuccessSynced is used as part of the Event 'reason' when a Foo is synced
+	// SuccessSynced is used as part of the Event 'reason' when a Bar is synced
 	SuccessSynced = "Synced"
-	// ErrResourceExists is used as part of the Event 'reason' when a Foo fails
+	// ErrResourceExists is used as part of the Event 'reason' when a Bar fails
 	// to sync due to a Deployment of the same name already existing.
 	ErrResourceExists = "ErrResourceExists"
 
-	// MessageResourceSynced is the message used for an Event fired when a Foo
+	// MessageResourceSynced is the message used for an Event fired when a Bar
 	// is synced successfully
-	MessageResourceSynced = "Foo synced successfully"
+	MessageResourceSynced = "Bar synced successfully"
 )
 
-// Controller is the controller implementation for Foo resources
+// Controller is the controller implementation for Bar resources
 type Controller struct {
 	// kubeclientset is a standard kubernetes clientset
 	kubeclientset kubernetes.Interface
 	// sampleclientset is a clientset for our own API group
 	sampleclientset clientset.Interface
 
-	foosLister listers.FooLister
-	foosSynced cache.InformerSynced
+	barsLister listers.BarLister
+	barsSynced cache.InformerSynced
 
 	// workqueue is a rate limited work queue. This is used to queue work to be
 	// processed instead of performing it as soon as a change happens. This
@@ -83,8 +83,8 @@ func NewController(
 	kubeInformerFactory kubeinformers.SharedInformerFactory,
 	sampleInformerFactory informers.SharedInformerFactory) controller.Interface {
 
-	// obtain a reference to a shared index informer for the Foo type.
-	fooInformer := sampleInformerFactory.Samplecontroller().V1alpha1().Foos()
+	// obtain a reference to a shared index informer for the Bar type.
+	barInformer := sampleInformerFactory.Samplecontroller().V1alpha1().Bars()
 
 	// Create event broadcaster
 	// Add sample-controller types to the default Kubernetes Scheme so Events can be
@@ -99,18 +99,18 @@ func NewController(
 	controller := &Controller{
 		kubeclientset:   kubeclientset,
 		sampleclientset: sampleclientset,
-		foosLister:      fooInformer.Lister(),
-		foosSynced:      fooInformer.Informer().HasSynced,
-		workqueue:       workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Foos"),
+		barsLister:      barInformer.Lister(),
+		barsSynced:      barInformer.Informer().HasSynced,
+		workqueue:       workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Bars"),
 		recorder:        recorder,
 	}
 
 	glog.Info("Setting up event handlers")
-	// Set up an event handler for when Foo resources change
-	fooInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc: controller.enqueueFoo,
+	// Set up an event handler for when Bar resources change
+	barInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc: controller.enqueueBar,
 		UpdateFunc: func(old, new interface{}) {
-			controller.enqueueFoo(new)
+			controller.enqueueBar(new)
 		},
 	})
 
@@ -126,16 +126,16 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	defer c.workqueue.ShutDown()
 
 	// Start the informer factories to begin populating the informer caches
-	glog.Info("Starting Foo controller")
+	glog.Info("Starting Bar controller")
 
 	// Wait for the caches to be synced before starting workers
 	glog.Info("Waiting for informer caches to sync")
-	if ok := cache.WaitForCacheSync(stopCh, c.foosSynced); !ok {
+	if ok := cache.WaitForCacheSync(stopCh, c.barsSynced); !ok {
 		return fmt.Errorf("failed to wait for caches to sync")
 	}
 
 	glog.Info("Starting workers")
-	// Launch two workers to process Foo resources
+	// Launch two workers to process Bar resources
 	for i := 0; i < threadiness; i++ {
 		go wait.Until(c.runWorker, time.Second, stopCh)
 	}
@@ -189,7 +189,7 @@ func (c *Controller) processNextWorkItem() bool {
 			return nil
 		}
 		// Run the syncHandler, passing it the namespace/name string of the
-		// Foo resource to be synced.
+		// Bar resource to be synced.
 		if err := c.syncHandler(key); err != nil {
 			return fmt.Errorf("error syncing '%s': %s", key, err.Error())
 		}
@@ -208,10 +208,10 @@ func (c *Controller) processNextWorkItem() bool {
 	return true
 }
 
-// enqueueFoo takes a Foo resource and converts it into a namespace/name
+// enqueueBar takes a Bar resource and converts it into a namespace/name
 // string which is then put onto the work queue. This method should *not* be
-// passed resources of any type other than Foo.
-func (c *Controller) enqueueFoo(obj interface{}) {
+// passed resources of any type other than Bar.
+func (c *Controller) enqueueBar(obj interface{}) {
 	var key string
 	var err error
 	if key, err = cache.MetaNamespaceKeyFunc(obj); err != nil {
@@ -222,7 +222,7 @@ func (c *Controller) enqueueFoo(obj interface{}) {
 }
 
 // syncHandler compares the actual state with the desired, and attempts to
-// converge the two. It then updates the Status block of the Foo resource
+// converge the two. It then updates the Status block of the Bar resource
 // with the current status of the resource.
 func (c *Controller) syncHandler(key string) error {
 	// Convert the namespace/name string into a distinct namespace and name
@@ -232,21 +232,21 @@ func (c *Controller) syncHandler(key string) error {
 		return nil
 	}
 
-	// Get the Foo resource with this namespace/name
-	foo, err := c.foosLister.Foos(namespace).Get(name)
+	// Get the Bar resource with this namespace/name
+	bar, err := c.barsLister.Bars(namespace).Get(name)
 	if err != nil {
-		// The Foo resource may no longer exist, in which case we stop
+		// The Bar resource may no longer exist, in which case we stop
 		// processing.
 		if errors.IsNotFound(err) {
-			runtime.HandleError(fmt.Errorf("foo '%s' in work queue no longer exists", key))
+			runtime.HandleError(fmt.Errorf("bar '%s' in work queue no longer exists", key))
 			return nil
 		}
 
 		return err
 	}
 
-	//TODO Do stuff with Foo here!
+	//TODO Do stuff with Bar here!
 
-	c.recorder.Event(foo, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
+	c.recorder.Event(bar, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
 	return nil
 }

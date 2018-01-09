@@ -19,6 +19,7 @@ go_library(
         "//pkg/client/clientset/versioned:go_default_library",
         "//pkg/client/informers/externalversions:go_default_library",
         "//pkg/controller:go_default_library",
+        "//pkg/controller/bar:go_default_library",
         "//pkg/controller/foo:go_default_library",
         "//pkg/signals:go_default_library",
         "//vendor/github.com/golang/glog:go_default_library",
@@ -58,8 +59,9 @@ load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 k8s_objects(
     name = "everything",
     objects = [
-        "//artifacts/examples:crd",
         "//artifacts/examples:authz",
+        "//artifacts/examples:foo",
+        "//artifacts/examples:bar",
         ":controller",
     ],
 )
