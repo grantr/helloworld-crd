@@ -12,3 +12,8 @@ k8s_object(
     name = "example",
     template = "example-foo.yaml",
 )
+
+k8s_object(
+    name = "authz",
+    template = "authz.yaml",
+)
