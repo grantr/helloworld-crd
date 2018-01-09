@@ -42,6 +42,7 @@ go_binary(
     embed = [":go_default_library"],
     importpath = "k8s.io/sample-controller",
     visibility = ["//visibility:public"],
+    pure = "on",
 )
 
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
