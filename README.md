@@ -1,12 +1,12 @@
 # sample-controller
 
-This repository implements a simple controller for watching Foo resources as
+This repository implements a simple controller for watching Foo and Bar resources as
 defined with a CustomResourceDefinition (CRD).
 
 This particular example demonstrates how to perform basic operations such as:
 
-* How to register a new custom resource (custom resource type) of type `Foo` using a CustomResourceDefinition.
-* How to create/get/list instances of your new resource type `Foo`.
+* How to register two new custom resource (custom resource type) of type `Foo` and `Bar` using a CustomResourceDefinition.
+* How to create/get/list instances of your new resource types.
 * How to setup a controller on resource handling create/update/delete events.
 
 ## Purpose
@@ -43,7 +43,8 @@ run `dep`, and then run `Gazelle` to generate `BUILD` files for them.
 
 We need to register our custom resource once:
 ```shell
-kubectl create -f artifacts/examples/crd.yaml
+kubectl create -f artifacts/examples/foo.yaml
+kubectl create -f artifacts/examples/bar.yaml
 ```
 
 ### Development
@@ -57,6 +58,9 @@ go run *.go -kubeconfig=$HOME/.kube/config -logtostderr=true -stderrthreshold=IN
 # create a custom resource of type Foo
 kubectl create -f artifacts/examples/example-foo.yaml
 
+# create a custom resource of type Bar
+kubectl create -f artifacts/examples/example-bar.yaml
+
 ```
 
 ### Cleanup
@@ -65,6 +69,7 @@ You can clean up the created CustomResourceDefinition with:
 
 ```shell
 kubectl delete crd foos.samplecontroller.k8s.io
+kubectl delete crd bars.samplecontroller.k8s.io
 ```
 
 ## Running On-Cluster
@@ -96,7 +101,9 @@ bazel run :everything.create
 
 To test things out, you can create an example `Foo` with:
 ```shell
-bazel run artifacts/examples:example.create
+bazel run artifacts/examples:example-foo.create
+# Or a Bar!
+bazel run artifacts/examples:example-bar.create
 ```
 
 ### Iterating

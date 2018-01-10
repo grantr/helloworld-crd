@@ -3,9 +3,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = [
+        "bar_types.go",
         "doc.go",
+        "foo_types.go",
         "register.go",
-        "types.go",
         "zz_generated.deepcopy.go",
     ],
     importpath = "k8s.io/sample-controller/pkg/apis/samplecontroller/v1alpha1",
