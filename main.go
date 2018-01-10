@@ -28,10 +28,16 @@ import (
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 
 	"k8s.io/sample-controller/pkg/controller"
+	"k8s.io/sample-controller/pkg/controller/bar"
+	"k8s.io/sample-controller/pkg/controller/foo"
 
 	clientset "k8s.io/sample-controller/pkg/client/clientset/versioned"
 	informers "k8s.io/sample-controller/pkg/client/informers/externalversions"
 	"k8s.io/sample-controller/pkg/signals"
+)
+
+const (
+	threadsPerController = 2
 )
 
 var (
@@ -63,14 +69,34 @@ func main() {
 	kubeInformerFactory := kubeinformers.NewSharedInformerFactory(kubeClient, time.Second*30)
 	exampleInformerFactory := informers.NewSharedInformerFactory(exampleClient, time.Second*30)
 
-	c := controller.New(kubeClient, exampleClient, kubeInformerFactory, exampleInformerFactory)
+	// Add new controllers here.
+	ctors := []controller.Constructor{
+		foo.NewController,
+		bar.NewController,
+	}
+
+	// Build all of our controllers, with the clients constructed above.
+	controllers := make([]controller.Interface, 0, len(ctors))
+	for _, ctor := range ctors {
+		controllers = append(controllers,
+			ctor(kubeClient, exampleClient, kubeInformerFactory, exampleInformerFactory))
+	}
 
 	go kubeInformerFactory.Start(stopCh)
 	go exampleInformerFactory.Start(stopCh)
 
-	if err = c.Run(2, stopCh); err != nil {
-		glog.Fatalf("Error running controllers: %s", err.Error())
+	// Start all of the controllers.
+	for _, ctrlr := range controllers {
+		go func(ctrlr controller.Interface) {
+			// We don't expect this to return until stop is called,
+			// but if it does, propagate it back.
+			if err := ctrlr.Run(threadsPerController, stopCh); err != nil {
+				glog.Fatalf("Error running controller: %s", err.Error())
+			}
+		}(ctrlr)
 	}
+
+	<-stopCh
 	glog.Flush()
 }
 

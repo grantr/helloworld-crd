@@ -9,10 +9,7 @@ gazelle(
 
 go_library(
     name = "go_default_library",
-    srcs = [
-        "main.go",
-        "plugins.go",
-    ],
+    srcs = ["main.go"],
     importpath = "k8s.io/sample-controller",
     visibility = ["//visibility:private"],
     deps = [
