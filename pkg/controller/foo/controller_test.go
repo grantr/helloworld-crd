@@ -101,3 +101,41 @@ func TestCreateGeneratesEvent(t *testing.T) {
 		t.Fatal("timed out waiting for event")
 	}
 }
+
+// Verify that an event is generated when a Foo is updated.
+func TestUpdateGeneratesEvent(t *testing.T) {
+	_, sampleClient, controller, _, _, stopCh := newRunningTestController(t)
+
+	testFoo := getTestFoo()
+	assert.Empty(t, testFoo.Spec.DeploymentName)
+
+	// Create an event to update.
+	sampleClient.SamplecontrollerV1alpha1().Foos("test").Create(testFoo)
+
+	// Create an event watcher on the controller's broadcaster. If an event is
+	// created, this will run and close stopCh, ending the test.
+	controller.broadcaster.StartEventWatcher(func(e *corev1.Event) {
+		assert.Equal(t, "Foo", e.InvolvedObject.Kind)
+		assert.Equal(t, "samplecontroller.k8s.io", e.InvolvedObject.APIVersion)
+		assert.Equal(t, testFoo.Name, e.InvolvedObject.Name)
+		assert.Equal(t, "test-deployment", testFoo.Spec.DeploymentName)
+		assert.Equal(t, MessageResourceSynced, e.Message)
+		assert.Equal(t, SuccessSynced, e.Reason)
+		assert.Equal(t, corev1.EventTypeNormal, e.Type)
+		close(stopCh)
+	})
+
+	// Modify the deploymentName of the test Foo
+	testFoo.Spec.DeploymentName = "test-deployment"
+
+	// Create a testFoo. This should cause an event to be created.
+	sampleClient.SamplecontrollerV1alpha1().Foos("test").Update(testFoo)
+
+	// Wait up to 3 seconds for stopCh to close, otherwise fail the test.
+	select {
+	case <-stopCh:
+		return
+	case <-time.After(time.Second * 3):
+		t.Fatal("timed out waiting for event")
+	}
+}
