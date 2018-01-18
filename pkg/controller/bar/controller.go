@@ -74,6 +74,10 @@ type Controller struct {
 	// recorder is an event recorder for recording Event resources to the
 	// Kubernetes API.
 	recorder record.EventRecorder
+
+	// broadcaster is an event broadcaster for broadcasting recorded Event
+	// resources. This is here so tests can observe recorded events.
+	broadcaster record.EventBroadcaster
 }
 
 // NewController returns a new sample controller
@@ -103,6 +107,7 @@ func NewController(
 		barsSynced:      barInformer.Informer().HasSynced,
 		workqueue:       workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Bars"),
 		recorder:        recorder,
+		broadcaster:     eventBroadcaster,
 	}
 
 	glog.Info("Setting up event handlers")
