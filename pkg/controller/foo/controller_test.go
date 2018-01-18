@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -65,7 +66,7 @@ func newRunningTestController(t *testing.T) (
 	// Run the controller.
 	go func() {
 		if err := controller.Run(2, stopCh); err != nil {
-			t.Fatalf("%v", err)
+			t.Fatalf("Error running controller: %v", err)
 		}
 	}()
 
@@ -80,7 +81,12 @@ func TestCreateGeneratesEvent(t *testing.T) {
 	// Create an event watcher on the controller's broadcaster. If an event is
 	// created, this will run and close stopCh, ending the test.
 	controller.broadcaster.StartEventWatcher(func(e *corev1.Event) {
-		//TODO make sure the event is what we expect
+		assert.Equal(t, "Foo", e.InvolvedObject.Kind)
+		assert.Equal(t, "samplecontroller.k8s.io", e.InvolvedObject.APIVersion)
+		assert.Equal(t, testFoo.Name, e.InvolvedObject.Name)
+		assert.Equal(t, MessageResourceSynced, e.Message)
+		assert.Equal(t, SuccessSynced, e.Reason)
+		assert.Equal(t, corev1.EventTypeNormal, e.Type)
 		close(stopCh)
 	})
 
