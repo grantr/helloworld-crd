@@ -13,7 +13,7 @@ This particular example demonstrates how to perform basic operations such as:
 
 This is an example of how to build a kube-like controller with a single type.
 
-## Updating Types 
+## Updating Types
 
 This makes use of the generators in [k8s.io/code-generator](https://github.com/kubernetes/code-generator)
 to generate a typed client, informers, listers and deep-copy functions. You can
@@ -29,13 +29,19 @@ Changes should not be made to these files manually, and when creating your own
 controller based off of this implementation you should not copy these files and
 instead run the `update-codegen` script to generate your own.
 
-
 ## Updating Deps
 
 As new external dependencies are added, they will need to be vendored using `dep`.
 To manage dependency updates, we have a script `./hack/update-deps.sh` which will
 run `dep`, and then run `Gazelle` to generate `BUILD` files for them.
 
+## Run Tests
+
+```sh
+bazel test pkg/...
+```
+
+You may need to run `./hack/update-deps.sh` when creating a test file in a new package for the first time, or adding a new dependency to a test file.
 
 ## Running Locally
 
